@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Signature String Generator</title>
+        <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 600;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .copy-btn {
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: scale(1.05);
+        }
+
+        .mode-selector {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .mode-option.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .mode-option:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group.hidden {
+            display: none;
+        }
+
+        label .required {
+            color: #e74c3c;
+            margin-left: 3px;
+        }
+
+        .step-info {
+            background: rgba(118, 75, 162, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .step-info h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .step-info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔐 Signature Generator</h1>
+
+            <div class="mode-selector">
+                <button type="button" class="mode-option active"
+                    data-mode="deduct">
+                    💰 Deduct Point
+                </button>
+                <button type="button" class="mode-option" data-mode="refund">
+                    🔄 Refund Point
+                </button>
+            </div>
+
+            <div class="step-info" id="stepInfo">
+                <h3>Deduct Point Mode:</h3>
+                <p>1. Key format:
+                    {client_secret}${transaction_id}${transaction_time}${user_id}${amount}<br>
+                    2. RSA-SHA256 signature of the key string with private
+                    key<br>
+                    3. Base64 encode the signature result</p>
+            </div>
+
+            <form id="signatureForm">
+                <div class="form-group">
+                    <label for="privateKey">RSA Private Key (PEM format) <span
+                            class="required">*</span></label>
+                    <textarea id="privateKey" rows="8"
+                        placeholder="-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC...
+-----END PRIVATE KEY-----" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="clientSecret">Client Secret <span
+                            class="required">*</span></label>
+                    <input type="text" id="clientSecret"
+                        placeholder="Enter client secret" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="transactionId">Transaction ID <span
+                            class="required">*</span></label>
+                    <input type="text" id="transactionId"
+                        placeholder="Enter transaction ID" required>
+                </div>
+
+                <div class="form-group" id="transactionTimeGroup">
+                    <label for="transactionTime">Transaction Time <span
+                            class="required">*</span></label>
+                    <input type="text" id="transactionTime"
+                        placeholder="Enter transaction time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="userId">User ID <span
+                            class="required">*</span></label>
+                    <input type="text" id="userId" placeholder="Enter user ID"
+                        required>
+                </div>
+
+                <div class="form-group" id="amountGroup">
+                    <label for="amount">Amount <span
+                            class="required">*</span></label>
+                    <input type="text" id="amount" placeholder="Enter amount"
+                        required>
+                </div>
+
+                <button type="submit" class="btn">Generate Signature</button>
+            </form>
+
+            <div id="results" class="result-section" style="display: none;">
+                <div class="result-label">Key String:</div>
+                <div id="keyString" class="result-value"></div>
+
+                <div class="result-label">RSA-SHA256 Signature (Base64):</div>
+                <div id="signatureBase64" class="result-value"></div>
+
+                <div class="result-label">Final Signature (Base64):</div>
+                <div id="signature" class="result-value"></div>
+                <button class="copy-btn" onclick="copySignature()">Copy
+                    Signature</button>
+            </div>
+        </div>
+
+        <script>
+        // RSA-SHA256 signature implementation
+        async function rsaSign(message, privateKeyPem) {
+            try {
+                // Remove PEM headers and decode base64
+                const pemHeader = "-----BEGIN PRIVATE KEY-----";
+                const pemFooter = "-----END PRIVATE KEY-----";
+                const pemContents = privateKeyPem
+                    .replace(pemHeader, "")
+                    .replace(pemFooter, "")
+                    .replace(/\s/g, "");
+                
+                // Convert base64 to ArrayBuffer
+                const binaryString = atob(pemContents);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                
+                // Import the private key
+                const privateKey = await crypto.subtle.importKey(
+                    "pkcs8",
+                    bytes.buffer,
+                    {
+                        name: "RSASSA-PKCS1-v1_5",
+                        hash: "SHA-256",
+                    },
+                    false,
+                    ["sign"]
+                );
+                
+                // Sign the message
+                const encoder = new TextEncoder();
+                const data = encoder.encode(message);
+                const signature = await crypto.subtle.sign(
+                    "RSASSA-PKCS1-v1_5",
+                    privateKey,
+                    data
+                );
+                
+                return new Uint8Array(signature);
+            } catch (error) {
+                throw new Error(`RSA signing failed: ${error.message}`);
+            }
+        }
+
+        // Convert bytes to hex for display
+        function bytesToHex(bytes) {
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Convert hex string to bytes for Base64 encoding
+        function hexToBytes(hex) {
+            const bytes = [];
+            for (let i = 0; i < hex.length; i += 2) {
+                bytes.push(parseInt(hex.substr(i, 2), 16));
+            }
+            return new Uint8Array(bytes);
+        }
+
+        // Base64 encode bytes directly
+        function bytesToBase64(bytes) {
+            return btoa(String.fromCharCode(...bytes));
+        }
+
+        function stringToBase64(str) {
+            return btoa(str);
+        }
+
+        // Mode switching functionality
+        let currentMode = 'deduct';
+
+        document.querySelectorAll('.mode-option').forEach(button => {
+            button.addEventListener('click', function() {
+                const mode = this.dataset.mode;
+                switchMode(mode);
+            });
+        });
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update active button
+            document.querySelectorAll('.mode-option').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            
+            // Update step info
+            const stepInfo = document.getElementById('stepInfo');
+            const transactionTimeGroup = document.getElementById('transactionTimeGroup');
+            const amountGroup = document.getElementById('amountGroup');
+            const transactionTimeInput = document.getElementById('transactionTime');
+            const amountInput = document.getElementById('amount');
+            
+            if (mode === 'deduct') {
+                stepInfo.innerHTML = `
+                    <h3>Deduct Point Mode:</h3>
+                    <p>1. Key format: {client_secret}$\{transaction_id}$\{transaction_time}$\{user_id}$\{amount}<br>
+                    2. RSA-SHA256 signature of the key string with private key<br>
+                    3. Base64 encode the signature result</p>
+                `;
+                transactionTimeGroup.classList.remove('hidden');
+                amountGroup.classList.remove('hidden');
+                transactionTimeInput.required = true;
+                amountInput.required = true;
+            } else {
+                stepInfo.innerHTML = `
+                    <h3>Refund Point Mode:</h3>
+                    <p>1. Key format: {client_secret}$\{transaction_id}$\{user_id}<br>
+                    2. RSA-SHA256 signature of the key string with private key<br>
+                    3. Base64 encode the signature result</p>
+                `;
+                transactionTimeGroup.classList.add('hidden');
+                amountGroup.classList.add('hidden');
+                transactionTimeInput.required = false;
+                amountInput.required = false;
+                transactionTimeInput.value = '';
+                amountInput.value = '';
+            }
+        }
+
+        document.getElementById('signatureForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            try {
+                // Get form values
+                const privateKeyPem = document.getElementById('privateKey').value;
+                const clientSecret = document.getElementById('clientSecret').value;
+                const transactionId = document.getElementById('transactionId').value;
+                const userId = document.getElementById('userId').value;
+                
+                let keyString;
+                
+                if (currentMode === 'deduct') {
+                    const transactionTime = document.getElementById('transactionTime').value;
+                    const amount = document.getElementById('amount').value;
+                    
+                    // Step 1: Create key string for deduct mode
+                    keyString = `${clientSecret}$${transactionId}$${transactionTime}$${userId}$${amount}`;
+                } else {
+                    // Step 1: Create key string for refund mode
+                    keyString = `${clientSecret}$${transactionId}$${userId}`;
+                }
+
+                // Step 2: Generate RSA-SHA256 signature with private key
+                const signatureBytes = await rsaSign(keyString, privateKeyPem);
+                const signatureBase64 = bytesToBase64(signatureBytes);
+                
+                // Step 3: Base64 encode the signature bytes
+                const signature = stringToBase64(signatureBase64);
+
+                // Display results
+                document.getElementById('keyString').textContent = keyString;
+                document.getElementById('signatureBase64').textContent = signatureBase64;
+                document.getElementById('signature').textContent = signature;
+                document.getElementById('results').style.display = 'block';
+
+                // Smooth scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Error generating signature: ' + error.message);
+            }
+        });
+
+        function copySignature() {
+            const signature = document.getElementById('signature').textContent;
+            navigator.clipboard.writeText(signature).then(function() {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(102, 126, 234, 0.8)';
+                }, 2000);
+            });
+        }
+
+        // Auto-fill current timestamp for transaction time (only in deduct mode)
+        document.getElementById('transactionTime').addEventListener('focus', function() {
+            if (!this.value && currentMode === 'deduct') {
+                this.value = Math.floor(Date.now() / 1000).toString();
+            }
+        });
+    </script>
+    </body>
+</html>
