@@ -1,10 +1,32 @@
-# Use nginx alpine image for minimal size
+# Multi-stage build for React application
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Stage 2: Serve with nginx
 FROM nginx:alpine
 
-# Copy the HTML file to nginx's default serve directory
-COPY index.html /usr/share/nginx/html/
+# Copy built application from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
 
-# Copy README.md if needed for documentation
+# Copy custom nginx configuration (optional - for SPA routing)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy README.md for documentation
 COPY README.md /usr/share/nginx/html/
 
 # Expose port 80
